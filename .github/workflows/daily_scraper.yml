@@ -1,0 +1,45 @@
+name: Taeglich Energie-Leads scrapen
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bibliotheken installieren
+        run: pip install requests beautifulsoup4
+
+      - name: Scraper starten
+        run: python scraper.py
+
+      - name: CSV speichern
+        run: |
+          git config --global user.name "Scraper Bot"
+          git config --global user.email "bot@scraper.de"
+          git add data/firmen.csv
+          git diff --staged --quiet || git commit -m "Neue Leads vom $(date +'%d.%m.%Y')"
+          git push
+```
+
+---
+
+### 4. Ganz unten speichern
+
+Scroll ganz nach unten — dort siehst du:
+```
+┌──────────────────────┐
+│  Commit changes      │
+└──────────────────────┘
